@@ -1,22 +1,22 @@
-'use client';
+"use client";
 
-import { Button, Callout, Text, TextField } from '@radix-ui/themes';
-import SimpleMDE from 'react-simplemde-editor';
-import { useForm, Controller } from 'react-hook-form';
-import axios from 'axios';
-import 'easymde/dist/easymde.min.css';
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { createIssueSchema } from '@/app/createIssueSchema';
-import { z } from 'zod';
-import ErrorMessage from '@/app/components/ErrorMessage';
+import { Button, Callout, Text, TextField } from "@radix-ui/themes";
+import SimpleMDE from "react-simplemde-editor";
+import { useForm, Controller } from "react-hook-form";
+import axios from "axios";
+import "easymde/dist/easymde.min.css";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { issueSchema } from "@/app/validationSchema";
+import { z } from "zod";
+import ErrorMessage from "@/app/components/ErrorMessage";
 import Spinner from "@/app/Spinner";
-import { Issue } from '@prisma/client';
+import { Issue } from "@prisma/client";
 
-type IssueFormData = z.infer<typeof createIssueSchema>;
+type IssueFormData = z.infer<typeof issueSchema>;
 
-const IssueForm = ({issue}:{issue?:Issue}) => {
+const IssueForm = ({ issue }: { issue?: Issue }) => {
   const router = useRouter();
   const {
     register,
@@ -24,19 +24,21 @@ const IssueForm = ({issue}:{issue?:Issue}) => {
     handleSubmit,
     formState: { errors },
   } = useForm<IssueFormData>({
-    resolver: zodResolver(createIssueSchema),
+    resolver: zodResolver(issueSchema),
   });
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [isSubmitting, setSubmitting] = useState(false);
 
   const onSubmit = handleSubmit(async (data) => {
     try {
       setSubmitting(true);
-      await axios.post('/api/issues', data);
-      router.push('/issues');
+      if (issue) await axios.patch(`/api/issues/${issue.id}`, data);
+      else await axios.post("/api/issues", data);
+      router.push("/issues");
+      router.refresh();
     } catch (error) {
       setSubmitting(false);
-      setError('An unexpected error occurred.');
+      setError("An unexpected error occurred.");
     }
   });
 
@@ -47,12 +49,13 @@ const IssueForm = ({issue}:{issue?:Issue}) => {
           <Callout.Text>{error}</Callout.Text>
         </Callout.Root>
       )}
-      <form
-        className="space-y-3"
-        onSubmit={onSubmit}
-      >
+      <form className="space-y-3" onSubmit={onSubmit}>
         <TextField.Root>
-          <TextField.Input placeholder="Title" {...register('title')} defaultValue={issue?.title}/>
+          <TextField.Input
+            placeholder="Title"
+            {...register("title")}
+            defaultValue={issue?.title}
+          />
         </TextField.Root>
         <ErrorMessage>{errors.title?.message}</ErrorMessage>
         <Controller
@@ -65,7 +68,8 @@ const IssueForm = ({issue}:{issue?:Issue}) => {
         />
         <ErrorMessage>{errors.description?.message}</ErrorMessage>
         <Button disabled={isSubmitting}>
-          Submit New Issue {isSubmitting && <Spinner />}
+          {issue ? "Update Issue" : "Submit Issue"}
+          {isSubmitting && <Spinner />}
         </Button>
       </form>
     </div>
