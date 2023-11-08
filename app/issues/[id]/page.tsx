@@ -1,9 +1,8 @@
-import React from "react";
 import prisma from "@/prisma/client";
-import { Card, Flex, Heading, Text } from "@radix-ui/themes";
+import { Box, Grid } from "@radix-ui/themes";
 import { notFound } from "next/navigation";
-import BadgeComponent from "@/app/components/BadgeComponent";
-import ReactMarkdown from "react-markdown";
+import EditIssue from "./EditIssue";
+import IssueDetails from "./IssueDetails";
 
 interface Props {
   params: { id: string };
@@ -14,18 +13,14 @@ async function IssueDetailPage({ params }: Props) {
   });
   if (!issue) notFound();
   return (
-    <div>
-      <Heading>{issue.title}</Heading>
-      <Flex className="space-x-2 my-2">
-        <BadgeComponent status={issue.status} />
-        <Text> {issue.createdAt.toDateString()}</Text>
-      </Flex>
-      <Card className="prose">
-      <ReactMarkdown>
-        {issue.description}
-      </ReactMarkdown>
-      </Card>
-    </div>
+    <Grid columns={{ initial: "1", md: "2" }}>
+      <Box>
+        <IssueDetails issue={issue} />
+      </Box>
+      <Box>
+        <EditIssue issue={issue} />
+      </Box>
+    </Grid>
   );
 }
 
