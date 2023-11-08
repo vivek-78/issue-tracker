@@ -1,73 +1,73 @@
-"use client";
-import { useState } from "react";
-import { Button, TextArea, TextField, Callout, Text } from "@radix-ui/themes";
-import { useForm } from "react-hook-form";
-import axios from "axios";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { createIssueSchema } from "@/app/createIssueSchema";
-import { z } from "zod";
-import { useRouter } from "next/navigation";
+'use client';
+
+import { Button, Callout, Text, TextField } from '@radix-ui/themes';
+import SimpleMDE from 'react-simplemde-editor';
+import { useForm, Controller } from 'react-hook-form';
+import axios from 'axios';
+import 'easymde/dist/easymde.min.css';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { createIssueSchema } from '@/app/createIssueSchema';
+import { z } from 'zod';
+import ErrorMessage from '@/app/components/ErrorMessage';
 import Spinner from "@/app/Spinner";
 
-type issueForm = z.infer<typeof createIssueSchema>;
-function NewIssue() {
-  const [error, setError] = useState(false);
-  const [spinner, setSpinner] = useState(false);
+type IssueForm = z.infer<typeof createIssueSchema>;
+
+const NewIssuePage = () => {
   const router = useRouter();
   const {
     register,
+    control,
     handleSubmit,
     formState: { errors },
-  } = useForm<issueForm>({
+  } = useForm<IssueForm>({
     resolver: zodResolver(createIssueSchema),
   });
-  const onSubmit = () => {
-    handleSubmit(async (data) => {
-      try {
-        setSpinner(true);
-        await axios.post("/api/issues", data);
-        router.push("/issues");
-      } catch (err) {
-        setSpinner(false);
-        setError(true);
-      }
-    });
-  };
+  const [error, setError] = useState('');
+  const [isSubmitting, setSubmitting] = useState(false);
+
+  const onSubmit = handleSubmit(async (data) => {
+    try {
+      setSubmitting(true);
+      await axios.post('/api/issues', data);
+      router.push('/issues');
+    } catch (error) {
+      setSubmitting(false);
+      setError('An unexpected error occurred.');
+    }
+  });
+
   return (
     <div className="max-w-xl">
       {error && (
-        <Callout.Root color="red" className="mb-2">
-          <Callout.Text>Unexpected error has occured</Callout.Text>
+        <Callout.Root color="red" className="mb-5">
+          <Callout.Text>{error}</Callout.Text>
         </Callout.Root>
       )}
-      <form className="max-w-xl" onSubmit={onSubmit}>
-        {errors.title && (
-          <Text color="red" as="p">
-            Title is required
-          </Text>
-        )}
-        <TextField.Root className="max-w-xl mb-2">
-          <TextField.Input
-            placeholder="Enter Issue Title"
-            {...register("title")}
-          />
+      <form
+        className="space-y-3"
+        onSubmit={onSubmit}
+      >
+        <TextField.Root>
+          <TextField.Input placeholder="Title" {...register('title')} />
         </TextField.Root>
-        {errors.description && (
-          <Text color="red" as="p">
-            Description is required
-          </Text>
-        )}
-        <TextArea
-          className="max-w-xl mb-3"
-          placeholder="Enter Issue Description"
-          {...register("description")}
+        <ErrorMessage>{errors.title?.message}</ErrorMessage>
+        <Controller
+          name="description"
+          control={control}
+          render={({ field }) => (
+            <SimpleMDE placeholder="Description" {...field} />
+          )}
         />
-        <Button disabled={spinner}>
-          Create New Issue {spinner && <Spinner />}
+        <ErrorMessage>{errors.description?.message}</ErrorMessage>
+        <Button disabled={isSubmitting}>
+          Submit New Issue {isSubmitting && <Spinner />}
         </Button>
       </form>
     </div>
   );
-}
+};
 
-export default NewIssue;
+export default NewIssuePage;
