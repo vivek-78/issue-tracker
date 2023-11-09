@@ -4,8 +4,11 @@ import { FaBug } from "react-icons/fa";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import classNames from "classnames";
+import { useSession } from "next-auth/react";
+import { Box, Button } from "@radix-ui/themes";
 function NavBar() {
   const currentPathName = usePathname();
+  const { status, data: session } = useSession();
   const links = [
     {
       href: "/dashboard",
@@ -27,9 +30,9 @@ function NavBar() {
             <Link
               href={link.href}
               className={classNames({
-                "text-zinc-900":currentPathName === link.href,
-                "text-zinc-500":currentPathName !== link.href,
-                "transition-colors": true
+                "text-zinc-900": currentPathName === link.href,
+                "text-zinc-500": currentPathName !== link.href,
+                "transition-colors": true,
               })}
             >
               {link.lable}
@@ -37,6 +40,16 @@ function NavBar() {
           </li>
         ))}
       </ul>
+      <Box>
+        <Button>
+          {status === "authenticated" && (
+            <Link href={"/api/auth/signout"}>Log out</Link>
+          )}
+          {status === "unauthenticated" && (
+            <Link href={"/api/auth/signin"}>Log in</Link>
+          )}
+        </Button>
+      </Box>
     </nav>
   );
 }
