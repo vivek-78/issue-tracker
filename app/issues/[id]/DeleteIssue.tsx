@@ -15,7 +15,7 @@ function DeleteIssue({ issueId }: { issueId: number }) {
       setDeleting(true);
       console.log(deleting);
       await axios.delete(`/api/issues/${issueId}`);
-      router.push("/issues");
+      router.push("/issues/list");
       router.refresh();
     } catch (err) {
       setDeleting(false);

@@ -8,7 +8,7 @@ function EditIssue({ issue }: { issue: Issue }) {
   return (
     <Button className="sm:max-w-full">
       <Pencil2Icon />
-      <Link href={`/issues/${issue.id}/edit`}>Edit Issue</Link>
+      <Link href={`/issues/edit/${issue.id}`}>Edit Issue</Link>
     </Button>
   );
 }

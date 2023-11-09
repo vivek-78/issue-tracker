@@ -12,7 +12,7 @@ function NavBar() {
       lable: "Dashboard",
     },
     {
-      href: "/issues",
+      href: "/issues/list",
       lable: "Issues",
     },
   ];
