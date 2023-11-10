@@ -6,6 +6,7 @@ import IssueDetails from "./IssueDetails";
 import DeleteIssue from "./DeleteIssue";
 import authOptions from "@/app/auth/authOptions";
 import { getServerSession } from "next-auth";
+import AssigneeSelect from "./AssigneeSelect";
 
 interface Props {
   params: { id: string };
@@ -21,12 +22,15 @@ async function IssueDetailPage({ params }: Props) {
       <Box className="lg:col-span-4">
         <IssueDetails issue={issue} />
       </Box>
-      {session && (<Box>
-        <Flex direction="column" gap="4">
-        <EditIssue issue={issue} />
-        <DeleteIssue issueId={issue.id}/>
-        </Flex>
-      </Box>)}
+      {session && (
+        <Box>
+          <Flex direction="column" gap="4">
+            <AssigneeSelect />
+            <EditIssue issue={issue} />
+            <DeleteIssue issueId={issue.id} />
+          </Flex>
+        </Box>
+      )}
     </Grid>
   );
 }
