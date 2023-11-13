@@ -1,8 +1,11 @@
 import React from 'react'
+import PaginationComponent from '../components/PaginationComponent';
 
-function Dashboard() {
+function Dashboard({ searchParams }: { searchParams : { page : string}}) {
   return (
-    <div className='text-slate-950'>dashboard page</div>
+    <div>
+      <PaginationComponent itemCount={100} pageSize={10} currentPage={parseInt(searchParams.page)}/>
+    </div>
   )
 }
 

@@ -4,8 +4,21 @@ import prisma from "@/prisma/client";
 import IssueToolBar from "./IssueToolBar";
 import Link from "next/link";
 import { BadgeComponent } from "@/app/components";
-const Issues = async () => {
-  const issues = await prisma.issue.findMany();
+import { Status } from "@prisma/client";
+const IssuesPage = async ({
+  searchParams,
+}: {
+  searchParams: { status: Status };
+}) => {
+  const statusValues = Object.values(Status);
+  const status = statusValues.includes(searchParams.status)
+    ? searchParams.status
+    : undefined;
+  const issues = await prisma.issue.findMany({
+    where: {
+      status,
+    },
+  });
   return (
     <div>
       <IssueToolBar />
@@ -42,4 +55,4 @@ const Issues = async () => {
   );
 };
 
-export default Issues;
+export default IssuesPage;

@@ -7,7 +7,7 @@ function BadgeComponent({ status }: { status: Status }) {
     { lable: string; color: "red" | "violet" | "green" }
   > = {
     OPEN: { lable: "open", color: "red" },
-    CLOSED: { lable: "green", color: "green" },
+    CLOSED: { lable: "closed", color: "green" },
     IN_PROGRESS: { lable: "in progress", color: "violet" },
   };
   return (

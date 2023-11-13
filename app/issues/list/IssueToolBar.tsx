@@ -1,15 +1,17 @@
-"use client"
-import React from 'react'
-import { Button } from "@radix-ui/themes";
-import { useRouter } from 'next/navigation';
+"use client";
+import React from "react";
+import { Button, Flex } from "@radix-ui/themes";
+import { useRouter } from "next/navigation";
+import IssueStatusFilter from "./IssueStatusFilter";
 
 function IssueToolBar() {
-  const router = useRouter()
+  const router = useRouter();
   return (
-    <div>
-        <Button onClick = {() => router.push("/issues/new")}>New Issues</Button>
-    </div>
-  )
+    <Flex mb="5" justify="between">
+      <IssueStatusFilter />
+      <Button onClick={() => router.push("/issues/new")}>New Issues</Button>
+    </Flex>
+  );
 }
 
-export default IssueToolBar
+export default IssueToolBar;
