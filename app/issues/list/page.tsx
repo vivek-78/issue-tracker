@@ -6,6 +6,7 @@ import Link from "next/link";
 import { BadgeComponent } from "@/app/components";
 import { Status } from "@prisma/client";
 import PaginationComponent from "@/app/components/PaginationComponent";
+import { Metadata } from "next";
 const IssuesPage = async ({
   searchParams,
 }: {
@@ -61,5 +62,10 @@ const IssuesPage = async ({
     </Flex>
   );
 };
-
+export const dynamic = "force-dynamic"
 export default IssuesPage;
+
+export const metadata:Metadata = {
+  title:"Issue Tracker - Issue List",
+  description:"view all issues"
+}
